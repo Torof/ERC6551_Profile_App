@@ -4,14 +4,15 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
 import {IERC6551Executable} from "erc6551/interfaces/IERC6551Executable.sol";
 
-contract CareerZen6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Executable {
+contract ERC6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Executable {
     uint256 public state;
+
+    string public testString;
 
     receive() external payable {}
 
@@ -61,7 +62,10 @@ contract CareerZen6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Exe
     function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
         return (interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC6551Account).interfaceId ||
-            interfaceId == type(IERC6551Executable).interfaceId);
+            interfaceId == type(IERC6551Executable).interfaceId ||
+            interfaceId == type(IERC721Receiver).interfaceId
+        );
+
     }
 
     function token()
@@ -92,4 +96,5 @@ contract CareerZen6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Exe
     function _isValidSigner(address signer) internal view returns (bool) {
         return signer == owner();
     }
+
 }
