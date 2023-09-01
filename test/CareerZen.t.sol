@@ -1,18 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.21;
 
-
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
-import {CareerZenAccount} from "../src/CareerZenAccount.sol";
-import {CareerZenRegistry} from "../src/CareerZenRegistry.sol";
+import {UserAccount} from "../src/UserAccount.sol";
+import {Registry} from "../src/Registry.sol";
 import {ProfileNFT} from "../src/ProfileNFT.sol";
 
 contract CareerzenTest is Test {
-    uint public constant HELPER_CHAINID = 31337;
+    uint256 public constant HELPER_CHAINID = 31337;
 
-    CareerZenRegistry public czRegistry;
-    CareerZenAccount public czAccount; 
+    Registry public czRegistry;
+    Account public czAccount;
     ProfileNFT public czProfileNFT;
     address public contractsOwner = vm.addr(10);
     address public tbaOwner = vm.addr(11);
@@ -20,9 +19,9 @@ contract CareerzenTest is Test {
 
     function setUp() public {
         vm.startPrank(contractsOwner);
-        czAccount = new CareerZenAccount();
-        czProfileNFT = new ProfileNFT();
-        czRegistry = new CareerZenRegistry();
+        czAccount = new Account();
+        czRegistry = new Registry();
+        czProfileNFT = new ProfileNFT(czRegistry, czAccount);
     }
 
     function test() public {
@@ -36,7 +35,8 @@ contract CareerzenTest is Test {
         console.log(address(czRegistry));
 
         //Creates TBA for token id 1
-        address tbaAccountAddress_1 = czRegistry.createAccount(address(czAccount), HELPER_CHAINID, address(czProfileNFT), 1, 0, "");
+        address tbaAccountAddress_1 =
+            czRegistry.createAccount(address(czAccount), HELPER_CHAINID, address(czProfileNFT), 1, 0, "");
         console.log(tbaAccountAddress_1);
 
         //Transfer token id 2 to TBA , owner is now TBA or token id 1
@@ -52,16 +52,17 @@ contract CareerzenTest is Test {
 
         vm.prank(contractsOwner);
         vm.expectRevert(abi.encodePacked("ERC721: caller is not token owner or approved"));
-        czProfileNFT.safeTransferFrom(tbaAccountAddress_1, tbaOwner , 2);
+        czProfileNFT.safeTransferFrom(tbaAccountAddress_1, tbaOwner, 2);
 
         vm.prank(tbaOwner);
         //make transfer of token id 2 from TBA to address3
-        CareerZenAccount(payable(tbaAccountAddress_1)).execute(address(czProfileNFT), 0, abi.encodeWithSignature("safeTransferFrom(address,address,uint256)",tbaAccountAddress_1, address3, 2),0);
+        CareerZenAccount(payable(tbaAccountAddress_1)).execute(
+            address(czProfileNFT),
+            0,
+            abi.encodeWithSignature("safeTransferFrom(address,address,uint256)", tbaAccountAddress_1, address3, 2),
+            0
+        );
         //verify address3 is now owner of token id 2
         assertEq(address3, czProfileNFT.ownerOf(2));
-
-
     }
-
-    
 }

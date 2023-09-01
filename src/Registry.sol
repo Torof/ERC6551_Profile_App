@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Create2.sol";
 import "erc6551/interfaces/IERC6551Registry.sol";
 import "erc6551/lib/ERC6551BytecodeLib.sol";
 
-contract CareerZenRegistry is IERC6551Registry {
+contract Registry is IERC6551Registry {
     error AccountCreationFailed();
 
     function createAccount(
@@ -17,13 +17,7 @@ contract CareerZenRegistry is IERC6551Registry {
         uint256 salt,
         bytes calldata initData
     ) external returns (address) {
-        bytes memory code = ERC6551BytecodeLib.getCreationCode(
-            implementation,
-            chainId,
-            tokenContract,
-            tokenId,
-            salt
-        );
+        bytes memory code = ERC6551BytecodeLib.getCreationCode(implementation, chainId, tokenContract, tokenId, salt);
 
         address _account = Create2.computeAddress(bytes32(salt), keccak256(code));
 
@@ -50,22 +44,13 @@ contract CareerZenRegistry is IERC6551Registry {
         return _account;
     }
 
-    function account(
-        address implementation,
-        uint256 chainId,
-        address tokenContract,
-        uint256 tokenId,
-        uint256 salt
-    ) external view returns (address) {
-        bytes32 bytecodeHash = keccak256(
-            ERC6551BytecodeLib.getCreationCode(
-                implementation,
-                chainId,
-                tokenContract,
-                tokenId,
-                salt
-            )
-        );
+    function account(address implementation, uint256 chainId, address tokenContract, uint256 tokenId, uint256 salt)
+        external
+        view
+        returns (address)
+    {
+        bytes32 bytecodeHash =
+            keccak256(ERC6551BytecodeLib.getCreationCode(implementation, chainId, tokenContract, tokenId, salt));
 
         return Create2.computeAddress(bytes32(salt), bytecodeHash);
     }
