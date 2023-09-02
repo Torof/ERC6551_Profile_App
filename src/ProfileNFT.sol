@@ -17,7 +17,7 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
     constructor(address erc6551registryAddress_, address userAccountImplementation_){
         erc6551registryAddress = erc6551registryAddress_;
         userAccountImplementation = userAccountImplementation_;
-        chainId = block.chainid();
+        chainId = block.chainid;
     }
 
     function mint(address to) public {
