@@ -20,7 +20,7 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
         chainId = block.chainid;
     }
 
-    function mint(address to) public {
+    function mint(address to) public returns (address){
         //IMPLEMENT: address is allowed to mint its profile NFT
 
         _totalSupply++;
