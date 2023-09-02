@@ -24,14 +24,16 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
         //IMPLEMENT: address is allowed to mint its profile NFT
 
         _totalSupply++;
-        
+        uint256 tokenId = _totalSupply;
         //locks token on minting
-        _locked[_totalSupply] = true;
+        _locked[tokenId] = true;
 
         //starts at id#1
-        _safeMint(to, _totalSupply);
-        (bool success, bytes memory data) = erc6551registryAddress.call(abi.encodeWithSignature("createAccount(address,uint256,address,uint256,uint256,bytes)", userAccountImplementationAddress,chainId, address(this), _totalSupply, 0));
+        _safeMint(to, tokenId);
+        (bool success, bytes memory data) = erc6551registryAddress.call(abi.encodeWithSignature("createAccount(address,uint256,address,uint256,uint256,bytes)", userAccountImplementationAddress,chainId, address(this), tokenId, 0));
         require(success, "failed to create account" );
+        address _account = abi.decode(data, (address));
+        boundAccount[tokenId] = _account;
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256) internal view override {
