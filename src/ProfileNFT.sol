@@ -7,16 +7,16 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 {
-    address public immutable erc6551registry;
-    address public immutable userAccountImplementation;
+    address public immutable erc6551registryAddress;
+    address public immutable userAccountImplementationAddress;
     uint256 public immutable chainId;
     mapping(uint256 => address) public boundAccount;
     mapping(uint256 => bool) private _locked;
     uint256 private _totalSupply;
 
-    constructor(address erc6551registryAddress_, address userAccountImplementation_){
+    constructor(address erc6551registryAddress_, address userAccountImplementationAddress_){
         erc6551registryAddress = erc6551registryAddress_;
-        userAccountImplementation = userAccountImplementation_;
+        userAccountImplementationAddress = userAccountImplementationAddress_;
         chainId = block.chainid;
     }
 
@@ -30,7 +30,8 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
 
         //starts at id#1
         _safeMint(to, _totalSupply);
-        erc6551registry.call(abi.encodeWithSignature("createAccount(address,uint256,address,uint256,uint256,bytes)", userAccountImplementation,);)
+        (bool success, bytes memory data) = erc6551registryAddress.call(abi.encodeWithSignature("createAccount(address,uint256,address,uint256,uint256,bytes)", userAccountImplementationAddress,chainId, address(this), _totalSupply, 0));
+        require(success, "failed to create account" );
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256) internal view override {

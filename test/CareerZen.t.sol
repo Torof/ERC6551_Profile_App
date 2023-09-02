@@ -11,7 +11,7 @@ contract CareerzenTest is Test {
     uint256 public constant HELPER_CHAINID = 31337;
 
     Registry public czRegistry;
-    Account public czAccount;
+    UserAccount public czAccount;
     ProfileNFT public czProfileNFT;
     address public contractsOwner = vm.addr(10);
     address public tbaOwner = vm.addr(11);
@@ -19,9 +19,9 @@ contract CareerzenTest is Test {
 
     function setUp() public {
         vm.startPrank(contractsOwner);
-        czAccount = new Account();
+        czAccount = new UserAccount();
         czRegistry = new Registry();
-        czProfileNFT = new ProfileNFT(czRegistry, czAccount);
+        czProfileNFT = new ProfileNFT(address(czRegistry), address(czAccount));
     }
 
     function test() public {
@@ -56,7 +56,7 @@ contract CareerzenTest is Test {
 
         vm.prank(tbaOwner);
         //make transfer of token id 2 from TBA to address3
-        CareerZenAccount(payable(tbaAccountAddress_1)).execute(
+        UserAccount(payable(tbaAccountAddress_1)).execute(
             address(czProfileNFT),
             0,
             abi.encodeWithSignature("safeTransferFrom(address,address,uint256)", tbaAccountAddress_1, address3, 2),
