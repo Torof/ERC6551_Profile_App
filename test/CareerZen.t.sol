@@ -14,8 +14,8 @@ contract CareerzenTest is Test {
     UserAccount public czAccount;
     ProfileNFT public czProfileNFT;
     address public contractsOwner = vm.addr(10);
-    address public tbaOwner = vm.addr(11);
-    address public address3 = vm.addr(12);
+    address public profileToken1 = vm.addr(11);
+    address public profileToken2 = vm.addr(12);
 
     function setUp() public {
         vm.startPrank(contractsOwner);

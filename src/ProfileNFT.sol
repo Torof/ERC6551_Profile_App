@@ -10,6 +10,7 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
     address public immutable erc6551registryAddress;
     address public immutable userAccountImplementationAddress;
     uint256 public immutable chainId;
+    mapping(address => bool) private _allowlist;
     mapping(uint256 => address) public boundAccount;
     mapping(uint256 => bool) private _locked;
     uint256 private _totalSupply;
@@ -20,7 +21,7 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
         chainId = block.chainid;
     }
 
-    function mint(address to) public returns (address){
+    function mintAndBound(address to) public returns (address){
         //IMPLEMENT: address is allowed to mint its profile NFT
 
         _totalSupply++;
@@ -34,6 +35,14 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
         require(success, "failed to create account" );
         address _account = abi.decode(data, (address));
         boundAccount[tokenId] = _account;
+    }
+
+    function allow(address user) external onlyOwner(){
+        _allowlist[user] = true;
+    }
+
+    function isAllowed(address user) public returns (bool allowed){
+        allowed = _allowlist[user];
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256) internal view override {
