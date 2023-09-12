@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.21;
 
-import {IERC5192} from "./interfaces/IERC5192.sol";
+import {IERC5192} from "../interfaces/IERC5192.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
@@ -21,8 +21,8 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
         chainId = block.chainid;
     }
 
-    function mintAndBound(address to) public returns (address){
-        //IMPLEMENT: address is allowed to mint its profile NFT
+    function mintAndBound(address to) public returns (address tba){
+        //IMPLEMENT: check address is allowed to mint its profile NFT
 
         _totalSupply++;
         uint256 tokenId = _totalSupply;
@@ -35,13 +35,14 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
         require(success, "failed to create account" );
         address _account = abi.decode(data, (address));
         boundAccount[tokenId] = _account;
+        tba = _account;
     }
 
     function allow(address user) external onlyOwner(){
         _allowlist[user] = true;
     }
 
-    function isAllowed(address user) public returns (bool allowed){
+    function isAllowed(address user) public view returns (bool allowed){
         allowed = _allowlist[user];
     }
 

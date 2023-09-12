@@ -8,7 +8,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract InstitutionAccount is ERC1155, Ownable2Step {
     using Strings for uint256;
-    constructor(string memory uri) ERC1155(uri){}
+    constructor(string memory _uri) ERC1155(_uri){}
 
     function mint(address to, uint256 id, uint256 amount) external onlyOwner() {
         _mint(to, id, amount, "");
