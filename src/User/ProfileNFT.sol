@@ -6,23 +6,14 @@ import {IERC5192} from "../interfaces/IERC5192.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
-contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 {
-    address public immutable erc6551registryAddress;
-    address public immutable userAccountImplementationAddress;
-    uint256 public immutable chainId;
-    mapping(address => bool) private _allowlist;
-    mapping(uint256 => address) public boundAccount;
+contract ProfileNFT is Ownable2Step, ERC721, IERC5192 {
+
     mapping(uint256 => bool) private _locked;
     uint256 private _totalSupply;
 
-    constructor(address erc6551registryAddress_, address userAccountImplementationAddress_){
-        erc6551registryAddress = erc6551registryAddress_;
-        userAccountImplementationAddress = userAccountImplementationAddress_;
-        chainId = block.chainid;
-    }
+    constructor(string memory name, string memory symbol) ERC721(name, symbol){}
 
-    function mintAndBound(address to) public returns (address tba){
-        //IMPLEMENT: check address is allowed to mint its profile NFT
+    function mint(address to) public onlyOwner returns (uint256 tokenId_){
 
         _totalSupply++;
         uint256 tokenId = _totalSupply;
@@ -31,19 +22,7 @@ contract ProfileNFT is Ownable2Step, ERC721("CareerZenProfile","CZP"), IERC5192 
 
         //starts at id#1
         _safeMint(to, tokenId);
-        (bool success, bytes memory data) = erc6551registryAddress.call(abi.encodeWithSignature("createAccount(address,uint256,address,uint256,uint256,bytes)", userAccountImplementationAddress,chainId, address(this), tokenId, 0));
-        require(success, "failed to create account" );
-        address _account = abi.decode(data, (address));
-        boundAccount[tokenId] = _account;
-        tba = _account;
-    }
-
-    function allow(address user) external onlyOwner(){
-        _allowlist[user] = true;
-    }
-
-    function isAllowed(address user) public view returns (bool allowed){
-        allowed = _allowlist[user];
+        tokenId_ = tokenId;
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256) internal view override {
