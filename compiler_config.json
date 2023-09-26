@@ -1,5 +1,5 @@
 {
-    "remappings": [
-        "@openzeppelin/=lib/openzeppelin-contracts/"
-]
+    "remappings": 
+        ["@openzeppelin/=lib/openzeppelin-contracts/"]
+
 }

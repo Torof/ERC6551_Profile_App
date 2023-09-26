@@ -1,0 +1,6 @@
+[compiler.solc]
+# evm_version = "" (unset - let the compiler decide)
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "erc6551/=lib/erc6551/src/",
+]
