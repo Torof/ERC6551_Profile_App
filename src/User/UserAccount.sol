@@ -6,6 +6,7 @@ import "../ERC6551_implementation/ERC6551Account.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
+
 contract UserAccount is ERC6551Account, IERC721Receiver, IERC1155Receiver {
     //TODO add ownership cycle guards
 

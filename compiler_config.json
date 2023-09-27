@@ -1,5 +1,7 @@
 {
     "remappings": 
-        ["@openzeppelin/=lib/openzeppelin-contracts/"]
+        ["@openzeppelin/=lib/openzeppelin-contracts/",
+        "erc6551/=lib/erc6551/src"
+    ]
 
 }

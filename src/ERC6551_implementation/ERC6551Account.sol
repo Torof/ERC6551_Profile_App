@@ -54,10 +54,10 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551Account, IERC6551Executabl
         return "";
     }
 
-    function supportsInterface(bytes4 interfaceId) external virtual pure returns (bool) {
+    function supportsInterface(bytes4 interfaceId) external pure virtual returns (bool) {
         return (
             interfaceId == type(IERC165).interfaceId || interfaceId == type(IERC6551Account).interfaceId
-                || interfaceId == type(IERC6551Executable).interfaceId 
+                || interfaceId == type(IERC6551Executable).interfaceId
         );
     }
 
