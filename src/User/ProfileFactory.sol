@@ -2,8 +2,7 @@
 
 pragma solidity 0.8.20;
 
-// import {IERC5192} from "../interfaces/IERC5192.sol";
-// import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import "./ProfileNFT.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
@@ -29,24 +28,26 @@ contract ProfileFactory is Ownable2Step {
         chainId = block.chainid;
     }
 
+    //CHECK reentrancy guard?
     function mintAndBound(address to, uint256 index) public returns (address tba){
         //IMPLEMENT: check address is allowed to mint its profile NFT
 
         //mints token of specific profileType
         (uint256 tokenId) = ProfileNFT(profileTypeContracts[index]).mint(to);
 
-        //create account in ERC6551Registry and bind to profileNFT
-        (bool success, bytes memory data) = erc6551registryAddress.call(abi.encodeWithSignature("createAccount(address,uint256,address,uint256,uint256,bytes)", userAccountImplementationAddress,chainId, profileTypeContracts[index], tokenId, 0));
-        require(success, "failed to create account" );
+        // //create account in ERC6551Registry and bind to profileNFT
+        // (bool success, bytes memory data) = erc6551registryAddress.call(abi.encodeWithSignature("createAccount(address,uint256,address,uint256,uint256,bytes)", userAccountImplementationAddress,chainId, profileTypeContracts[index], tokenId, 0));
+        // require(success, "failed to create account" );
+        
 
         //register boundAccount for tokenId of profileType
-        address _account = abi.decode(data, (address));
+        address _account = IERC6551Registry(erc6551registryAddress).createAccount(userAccountImplementationAddress, chainId, profileTypeContracts[index], tokenId, 0, "");
         boundAccount[index][tokenId] = _account;
         tba = _account;
     }
 
     //CHECK simple array of addresses or array of structs?
-    function createNewProfileType(string memory name, string memory symbol) external {
+    function createNewProfileType(string memory name, string memory symbol) external onlyOwner() returns(address profileTypeContractAddress){
         //IMPLEMENT: check address is allowed to create new profileType
 
         //deploy new profileTypeContract
@@ -54,9 +55,11 @@ contract ProfileFactory is Ownable2Step {
 
         //add to profileTypeContracts
         profileTypeContracts.push(address(profileTypeContract));
+        profileTypeContractAddress = address(profileTypeContract);
     }
 
-    function account() external view returns (address account_){
+    function account(uint256 index, uint256 tokenId) external view returns (address account_){
+        account_ = IERC6551Registry(erc6551registryAddress).account( userAccountImplementationAddress , chainId, profileTypeContracts[index], tokenId, 0);
     }
 
     //IMPLEMENT: function for onwership change of profileNFT
